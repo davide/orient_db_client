@@ -76,6 +76,14 @@ module OrientDbClient
 			@connection.query(@id, text, options)
 		end
 
+		def command(session, text, options = {})
+			options[:query_class_name] = :command
+
+			result = @protocol.command(@socket, session, text, options)
+
+			result[:message_content]
+		end
+
 		def reload
 			@connection.reload(@id)
 		end
