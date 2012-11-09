@@ -135,6 +135,13 @@ module OrientDbClient
       result[:message_content]
     end
 
+    def create_edge(session, from_rid, to_rid, record_class = "")
+      result = command(session, "create edge #{record_class} from #{from_rid} to #{to_rid}")
+      result.map do |r|
+        OrientDbClient::Rid.new(r[:cluster_id], r[:cluster_position])
+      end
+    end
+
     def reload(session)
       result = @protocol.db_reload(@socket, session)
       clusters = result[:message_content][:clusters]
