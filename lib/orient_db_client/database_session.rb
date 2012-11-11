@@ -76,18 +76,15 @@ module OrientDbClient
 			@connection.query(@id, text, options)
 		end
 
-		def command(session, text, options = {})
-			options[:query_class_name] = :command
-
-			result = @protocol.command(@socket, session, text, options)
-
-			result[:message_content]
+		def command(text, options = {})
+			@connection.command(@id, text, options)
 		end
 
-		def create_edge(session, from_rid, to_rid, record_class = "")
-			result = command(session, "create edge #{record_class} from #{from_rid} to #{to_rid}")
-			result = result[0]
-			OrientDbClient::Rid.new(result[:cluster_id], result[:cluster_position])
+		def create_edge(from_rid, to_rid, record_class = "")
+			result = command("create edge #{record_class} from #{from_rid} to #{to_rid}")
+			result.map do |r|
+				OrientDbClient::Rid.new(r[:cluster_id], r[:cluster_position])
+			end
 		end
 
 		def reload
